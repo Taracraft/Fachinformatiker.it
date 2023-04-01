@@ -154,7 +154,8 @@ def main():
         print('Clearing messages...')
         await channels.purge(limit=1000)
         embed = discord.Embed(title='Wähle die Fachrichtung deines Fachinformatikers!',
-                              description='Auswahl des Fachbereiches')
+                              description='nur __eine__ Rolle wählen **!**, bei __Missachtung__ werden alle Rollen entfernt**!**')
+        embed.set_author(name="https://www.fachinformatik.it",url="https://www.fachinformatik.it")
         embed.add_field(name='Systemintegeration', value='\N{Desktop Computer}', inline=True)
         embed.add_field(name='Systemintegeration-Azubi', value='\N{Personal Computer}', inline=True)
         embed.add_field(name='Anwendungsentwicklung', value='\N{Notebook}', inline=True)
@@ -163,7 +164,7 @@ def main():
         embed.add_field(name='Digitale Vernetzung-Azubi', value='\N{wrench}', inline=True)
         embed.add_field(name='Daten- und Prozessanalyse', value='\N{keyboard}', inline=True)
         embed.add_field(name='Daten- und Prozessanalyse-Azubi', value='\N{telescope}', inline=True)
-        embed.set_footer(text='Auswahl ist erforderlich')
+        embed.set_footer(text='Auswahl ist erforderlich, by @Taracraft#0762')
         mess = await channels.send(embed=embed)
         await mess.add_reaction('\N{Desktop Computer}')
         await mess.add_reaction('\N{Personal Computer}')

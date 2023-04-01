@@ -1,0 +1,84 @@
+ #!/bin/bash
+ # /etc/init.d/fi_reg
+ # version 0.4.2 2016-02-09 (YYYY-MM-DD)
+ #
+ ### BEGIN INIT INFO
+ # Provides:   minecraft
+ # Required-Start: $local_fs $remote_fs screen-cleanup
+ # Required-Stop:  $local_fs $remote_fs
+ # Should-Start:   $network
+ # Should-Stop:    $network
+ # Default-Start:  2 3 4 5
+ # Default-Stop:   0 1 6
+ # Short-Description:    Python Skript
+ # Description:    Starts the Python Skript
+ ### END INIT INFO
+ 
+ #Settings
+ SERVICE='registrierung.py'
+ SCREENNAME='fireg'
+ USERNAME='****'
+ BOTPATH='/home/discord/Fachinformatiker-Discord/Bot'
+ INVOCATION="python3.9 $SERVICE" 
+ 
+ ME=`whoami`
+ as_user() {
+   if [ "$ME" = "$USERNAME" ] ; then
+     bash -c "$1"
+   else
+     su - "$USERNAME" -c "$1"
+   fi
+ }
+ 
+ bot_start() {
+   if  pgrep -u $USERNAME -f $SERVICE > /dev/null ; then
+     echo "$SERVICE is already running!"
+   else
+     echo "Starting $SERVICE..."
+     cd $BOTPATH
+     as_user "cd $BOTPATH && screen -dmS ${SCREENNAME} $INVOCATION"
+     sleep 7
+     if pgrep -u $USERNAME -f $SERVICE > /dev/null ; then
+       echo "$SERVICE is now running."
+     else
+       echo "Error! Could not start $SERVICE!"
+     fi
+   fi
+ }
+ 
+#Start-Stop here
+ case "$1" in
+   start)
+     bot_start
+     ;;
+   stop)
+     echo "Stopping fireg"
+        screen -S fireg -X quit
+        echo "."
+        echo "fireg stopped"
+     ;;
+   restart)
+     echo "Stopping fireg"
+        screen -S fireg -X quit
+        echo "."
+        echo "fireg stopped"
+     bot_start
+     ;;
+   status)
+     if pgrep -u $USERNAME -f $SERVICE > /dev/null ; then
+       echo "$SERVICE is running."
+     else
+       echo "$SERVICE is not running."
+     fi
+     ;;
+   listen)
+     bot_listen
+     ;;
+ 
+   *)
+   echo "Usage: $0 {start|stop|status|restart|"}
+   exit 1
+   ;;
+ esac
+ 
+ exit 0
