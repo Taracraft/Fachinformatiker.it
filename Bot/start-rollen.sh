@@ -1,0 +1,1 @@
+screen -dmS dcfibotrollen python3.9 /home/git/Fachinformatiker-Discord/Bot/rollencheck.py
