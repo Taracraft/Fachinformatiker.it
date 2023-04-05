@@ -52,13 +52,13 @@
      bot_start
      ;;
    stop)
-     echo "Stopping fireg"
+     echo "Stopping firollen"
         screen -S firollen -X quit
         echo "."
         echo "firollen stopped"
      ;;
    restart)
-     echo "Stopping fireg"
+     echo "Stopping firollen"
         screen -S firollen -X quit
         echo "."
         echo "firollen stopped"
