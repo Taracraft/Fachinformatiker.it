@@ -5,6 +5,16 @@ import logging.handlers
 import discord
 from discord.utils import get
 
+'''rolelist = [1089909009248698481,
+            1089909009248698479,
+            1089909009248698480,
+            1089909008867012708,
+            1089909008867012703,
+            1089909008867012702,
+            1089909008867012705,
+            1089909008867012704,
+            1093651596585484369,
+            1093652255783264347]'''
 intents = discord.Intents.all()
 intents.members = True
 intents.messages = True
@@ -60,43 +70,51 @@ async def on_raw_reaction_add(payload):
     undefined = discord.utils.get(member.guild.roles, name="-undefined-")
     # channel and message IDs should be integer:
     if payload.channel_id == 1092355243418861619:
-        if str(payload.emoji) == '\N{keyboard}':
-            role = get(payload.member.guild.roles, name='FIDV-Azubi')
-            await member.add_roles(role)
-            await member.remove_roles(undefined)
-        elif str(payload.emoji) == '\N{telescope}':
+        if str(payload.emoji) == '\N{wrench}':
+            fidvazubi = get(payload.member.guild.roles, name='FIDV-Azubi')
+            for guild in client.guilds:
+                for member in guild.members:
+                    for role in member.roles:
+                        if role.name == "FIDV" or role.name == "FISI-Azubi" or role.name == "FISI" or role.name == "FIDP-Azubi" or role.name == "FIDP" or role.name == "FIAE-Azubi" or role.name == "FIAE" or role.name == "IT-SE-Azubi" or role.name == "IT-SE" ==True:
+                            channel = client.get_channel(1089909009869451277)
+                            await channel.send(f" Folgender benutzer hat mehr als 1 Rolle USER_ID: {member.id:d} - USER_NAME: {member.name}  - ROLE: {role.name} - Beigetreten {member.joined_at.strftime('%d.%m.%Y')}")
+                            return
+                        else:
+                            await member.add_roles(fidvazubi)
+                            await member.remove_roles(undefined)
+        if str(payload.emoji) == '\N{screwdriver}':
             role = get(payload.member.guild.roles, name='FIDV')
             await member.add_roles(role)
             await member.remove_roles(undefined)
-        elif str(payload.emoji) == '\N{wrench}':
+        if str(payload.emoji) == '\N{telescope}':
             role = get(payload.member.guild.roles, name='FIDP-Azubi')
             await member.add_roles(role)
             await member.remove_roles(undefined)
-        elif str(payload.emoji) == '\N{screwdriver}':
+        if str(payload.emoji) == '\N{keyboard}':
             role = get(payload.member.guild.roles, name='FIDP')
             await member.add_roles(role)
             await member.remove_roles(undefined)
-        elif str(payload.emoji) == '\N{ticket}':
+        if str(payload.emoji) == '\N{ticket}':
             role = get(payload.member.guild.roles, name='FIAE-Azubi')
             await member.add_roles(role)
             await member.remove_roles(undefined)
-        elif str(payload.emoji) == '\N{Notebook}':
+        if str(payload.emoji) == '\N{Notebook}':
             role = get(payload.member.guild.roles, name='FIAE')
             await member.add_roles(role)
             await member.remove_roles(undefined)
-        elif str(payload.emoji) == '\N{Personal Computer}':
+        if str(payload.emoji) == '\N{Personal Computer}':
             role = get(payload.member.guild.roles, name='FISI-Azubi')
             await member.add_roles(role)
             await member.remove_roles(undefined)
-        elif str(payload.emoji) == '\N{Desktop Computer}':
+        if str(payload.emoji) == '\N{Desktop Computer}':
             role = get(payload.member.guild.roles, name='FISI')
             await member.add_roles(role)
             await member.remove_roles(undefined)
-        elif str(payload.emoji) == '':
+        if str(payload.emoji) == '\N{High Voltage Sign}':
             role = get(payload.member.guild.roles, name='IT-SE-Azubi')
             await member.add_roles(role)
             await member.remove_roles(undefined)
-        elif str(payload.emoji) == '':
+        if str(payload.emoji) == '\N{Electric Plug}':
             role = get(payload.member.guild.roles, name='IT-SE')
             await member.add_roles(role)
             await member.remove_roles(undefined)
@@ -117,44 +135,44 @@ async def on_raw_reaction_remove(payload):
     member = get(guild.members, id=payload.user_id)
     undefined = discord.utils.get(member.guild.roles, name="-undefined-")
     if payload.channel_id == 1092355243418861619:
+        if str(payload.emoji) == '\N{wrench}':
+            role = get(guild.roles, name='FIDV-Azubi')
+            await member.remove_roles(role)
+            await member.add_roles(undefined)
+        if str(payload.emoji) == '\N{screwdriver}':
+            role = get(guild.roles, name='FIDV')
+            await member.remove_roles(role)
+            await member.add_roles(undefined)
+        if str(payload.emoji) == '\N{telescope}':
+            role = get(guild.roles, name='FIDP-Azubi')
+            await member.remove_roles(role)
+            await member.add_roles(undefined)
         if str(payload.emoji) == '\N{keyboard}':
-            role = get(payload.member.guild.roles, name='FIDV-Azubi')
+            role = get(guild.roles, name='FIDP')
             await member.remove_roles(role)
             await member.add_roles(undefined)
-        elif str(payload.emoji) == '\N{telescope}':
-            role = get(payload.member.guild.roles, name='FIDV')
+        if str(payload.emoji) == '\N{ticket}':
+            role = get(guild.roles, name='FIAE-Azubi')
             await member.remove_roles(role)
             await member.add_roles(undefined)
-        elif str(payload.emoji) == '\N{wrench}':
-            role = get(payload.member.guild.roles, name='FIDP-Azubi')
+        if str(payload.emoji) == '\N{Notebook}':
+            role = get(guild.roles, name='FIAE')
             await member.remove_roles(role)
             await member.add_roles(undefined)
-        elif str(payload.emoji) == '\N{screwdriver}':
-            role = get(payload.member.guild.roles, name='FIDP')
+        if str(payload.emoji) == '\N{Personal Computer}':
+            role = get(guild.roles, name='FISI-Azubi')
             await member.remove_roles(role)
             await member.add_roles(undefined)
-        elif str(payload.emoji) == '\N{ticket}':
-            role = get(payload.member.guild.roles, name='FIAE-Azubi')
+        if str(payload.emoji) == '\N{Desktop Computer}':
+            role = get(guild.roles, name='FISI')
             await member.remove_roles(role)
             await member.add_roles(undefined)
-        elif str(payload.emoji) == '\N{Notebook}':
-            role = get(payload.member.guild.roles, name='FIAE')
+        if str(payload.emoji) == '\N{High Voltage Sign}':
+            role = get(guild.roles, name='IT-SE-Azubi')
             await member.remove_roles(role)
             await member.add_roles(undefined)
-        elif str(payload.emoji) == '\N{Personal Computer}':
-            role = get(payload.member.guild.roles, name='FISI-Azubi')
-            await member.remove_roles(role)
-            await member.add_roles(undefined)
-        elif str(payload.emoji) == '\N{Desktop Computer}':
-            role = get(payload.member.guild.roles, name='FISI')
-            await member.remove_roles(role)
-            await member.add_roles(undefined)
-        elif str(payload.emoji) == '':
-            role = get(payload.member.guild.roles, name='IT-SE-Azubi')
-            await member.remove_roles(role)
-            await member.add_roles(undefined)
-        elif str(payload.emoji) == '':
-            role = get(payload.member.guild.roles, name='IT-SE')
+        if str(payload.emoji) == '\N{Electric Plug}':
+            role = get(guild.roles, name='IT-SE')
             await member.remove_roles(role)
             await member.add_roles(undefined)
         else:
@@ -181,7 +199,7 @@ def main():
         channels = client.get_channel(1092355243418861619)
         print('Clearing messages...')
         await channels.purge(limit=1000)
-        embed = discord.Embed(title='Wähle die Fachrichtung deines Fachinformatikers!',
+        embed = discord.Embed(title='Wähle die Fachrichtung deines Berufes!',
                               description='nur __eine__ Rolle wählen **!**, bei __Missachtung__ werden alle Rollen entfernt**!**')
         embed.set_author(name="https://www.fachinformatik.it",url="https://www.fachinformatik.it")
         embed.add_field(name='Systemintegeration', value='\N{Desktop Computer}', inline=True)
@@ -192,6 +210,8 @@ def main():
         embed.add_field(name='Digitale Vernetzung-Azubi', value='\N{wrench}', inline=True)
         embed.add_field(name='Daten- und Prozessanalyse', value='\N{keyboard}', inline=True)
         embed.add_field(name='Daten- und Prozessanalyse-Azubi', value='\N{telescope}', inline=True)
+        embed.add_field(name='IT-Systemelektroniker', value='\N{Electric Plug}', inline=True)
+        embed.add_field(name='IT-Systemelektroniker-Azubi', value='\N{High Voltage Sign}', inline=True)
         embed.set_footer(text='Auswahl ist erforderlich, by @Taracraft#0762')
         mess = await channels.send(embed=embed)
         await mess.add_reaction('\N{Desktop Computer}')
@@ -202,6 +222,8 @@ def main():
         await mess.add_reaction('\N{wrench}')
         await mess.add_reaction('\N{keyboard}')
         await mess.add_reaction('\N{telescope}')
+        await mess.add_reaction('\N{Electric Plug}')
+        await mess.add_reaction('\N{High Voltage Sign}')
 
 if __name__ == '__main__':
     main()
