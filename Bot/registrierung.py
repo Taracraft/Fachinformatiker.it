@@ -3,7 +3,18 @@ import asyncio
 import logging.handlers
 
 import discord
+from discord.utils import get
 
+'''rolelist = [1089909009248698481,
+            1089909009248698479,
+            1089909009248698480,
+            1089909008867012708,
+            1089909008867012703,
+            1089909008867012702,
+            1089909008867012705,
+            1089909008867012704,
+            1093651596585484369,
+            1093652255783264347]'''
 intents = discord.Intents.all()
 intents.members = True
 intents.messages = True
@@ -31,7 +42,7 @@ async def status_task():
         await client.change_presence(activity=discord.Game('https://www.fachinformatik.it'),
                                      status=discord.Status.online)
         await asyncio.sleep(10)
-        await client.change_presence(activity=discord.Game('Rollen-Auswahl'), status=discord.Status.online)
+        await client.change_presence(activity=discord.Game('Testbot'), status=discord.Status.online)
         await asyncio.sleep(5)
 
 
@@ -49,95 +60,122 @@ async def on_member_join(member: discord.Member):
                     value="Für weitere Fragen zögere nicht die Admins zu Kontaktieren", inline=False)
     embed.set_footer(text="by Thomas(Taracraft#0762)")
     await member.send(embed=embed)
+
+
+# Assign the role when the role is added as a reaction to the message.
 @client.event
-async def on_message(message):
-    global g
-
-    if message.author.bot:
-        return
-    if message.content.lower() == "!help":
-        await message.channel.send('**Hilfe zum Fachinformatiker-Bot**\n\n'
-                                   '!help zeigt diese Hilfe an.')
-
-
-@client.event
-async def on_reaction_add(reaction, member):
+async def on_raw_reaction_add(payload):
+    guild = client.get_guild(payload.guild_id)
+    member = get(guild.members, id=payload.user_id)
     undefined = discord.utils.get(member.guild.roles, name="-undefined-")
-    Channel = client.get_channel(1089909009869451279)
-    if reaction.message.channel.id != Channel.id:
-        return
-    if reaction.emoji == '\N{keyboard}':
-        role = discord.utils.get(member.guild.roles, name="FIDV")
-        await member.add_roles(role)
-        await member.remove_roles(undefined)
-    if reaction.emoji == '\N{telescope}':
-        role = discord.utils.get(member.guild.roles, name="FIDV-Azubi")
-        await member.add_roles(role)
-        await member.remove_roles(undefined)
-    if reaction.emoji == '\N{wrench}':
-        role = discord.utils.get(member.guild.roles, name="FIDP-Azubi")
-        await member.add_roles(role)
-        await member.remove_roles(undefined)
-    if reaction.emoji == '\N{screwdriver}':
-        role = discord.utils.get(member.guild.roles, name="FIDP")
-        await member.add_roles(role)
-        await member.remove_roles(undefined)
-    if reaction.emoji == '\N{ticket}':
-        role = discord.utils.get(member.guild.roles, name="FIAE-Azubi")
-        await member.add_roles(role)
-        await member.remove_roles(undefined)
-    if reaction.emoji == '\N{Notebook}':
-        role = discord.utils.get(member.guild.roles, name="FIAE")
-        await member.add_roles(role)
-        await member.remove_roles(undefined)
-    if reaction.emoji == '\N{Personal Computer}':
-        role = discord.utils.get(member.guild.roles, name="FISI-Azubi")
-        await member.add_roles(role)
-        await member.remove_roles(undefined)
-    if reaction.emoji == '\N{Desktop Computer}':
-        role = discord.utils.get(member.guild.roles, name="FISI")
-        await member.add_roles(role)
-        await member.remove_roles(undefined)
+    # channel and message IDs should be integer:
+    if payload.channel_id == 1092355243418861619:
+        if str(payload.emoji) == '\N{wrench}':
+            role = get(payload.member.guild.roles, name='FIDV-Azubi')
+            await member.add_roles(role)
+            await member.remove_roles(undefined)
+        if str(payload.emoji) == '\N{screwdriver}':
+            role = get(payload.member.guild.roles, name='FIDV')
+            await member.add_roles(role)
+            await member.remove_roles(undefined)
+        if str(payload.emoji) == '\N{telescope}':
+            role = get(payload.member.guild.roles, name='FIDP-Azubi')
+            await member.add_roles(role)
+            await member.remove_roles(undefined)
+        if str(payload.emoji) == '\N{keyboard}':
+            role = get(payload.member.guild.roles, name='FIDP')
+            await member.add_roles(role)
+            await member.remove_roles(undefined)
+        if str(payload.emoji) == '\N{ticket}':
+            role = get(payload.member.guild.roles, name='FIAE-Azubi')
+            await member.add_roles(role)
+            await member.remove_roles(undefined)
+        if str(payload.emoji) == '\N{Notebook}':
+            role = get(payload.member.guild.roles, name='FIAE')
+            await member.add_roles(role)
+            await member.remove_roles(undefined)
+        if str(payload.emoji) == '\N{Personal Computer}':
+            role = get(payload.member.guild.roles, name='FISI-Azubi')
+            await member.add_roles(role)
+            await member.remove_roles(undefined)
+        if str(payload.emoji) == '\N{Desktop Computer}':
+            role = get(payload.member.guild.roles, name='FISI')
+            await member.add_roles(role)
+            await member.remove_roles(undefined)
+        if str(payload.emoji) == '\N{High Voltage Sign}':
+            role = get(payload.member.guild.roles, name='IT-SE-Azubi')
+            await member.add_roles(role)
+            await member.remove_roles(undefined)
+        if str(payload.emoji) == '\N{Electric Plug}':
+            role = get(payload.member.guild.roles, name='IT-SE')
+            await member.add_roles(role)
+            await member.remove_roles(undefined)
+        else:
+            role = get(guild.roles, name=payload.emoji)
+
+        if role is not None:
+            await payload.member.add_roles(role)
+            channel = client.get_channel(1089909009869451277)
+            await channel.send(
+                f"{member.mention} hat die {role.name} Role zugewiesen bekommen")
 
 
+# Assign the role when the role is added as a reaction to the message.
 @client.event
-async def on_reaction_remove(reaction, member):
+async def on_raw_reaction_remove(payload):
+    guild = client.get_guild(payload.guild_id)
+    member = get(guild.members, id=payload.user_id)
     undefined = discord.utils.get(member.guild.roles, name="-undefined-")
-    Channel = client.get_channel(1089909009869451279)
-    if reaction.message.channel.id != Channel.id:
-        return
-    if reaction.emoji == '\N{keyboard}':
-        role = discord.utils.get(member.guild.roles, name="FIDV")
-        await member.remove_roles(role)
-        await member.add_roles(undefined)
-    if reaction.emoji == '\N{telescope}':
-        role = discord.utils.get(member.guild.roles, name="FIDV-Azubi")
-        await member.remove_roles(role)
-        await member.add_roles(undefined)
-    if reaction.emoji == '\N{wrench}':
-        role = discord.utils.get(member.guild.roles, name="FIDP-Azubi")
-        await member.remove_roles(role)
-        await member.add_roles(undefined)
-    if reaction.emoji == '\N{screwdriver}':
-        role = discord.utils.get(member.guild.roles, name="FIDP")
-        await member.remove_roles(role)
-        await member.add_roles(undefined)
-    if reaction.emoji == '\N{ticket}':
-        role = discord.utils.get(member.guild.roles, name="FIAE-Azubi")
-        await member.remove_roles(role)
-        await member.add_roles(undefined)
-    if reaction.emoji == '\N{Notebook}':
-        role = discord.utils.get(member.guild.roles, name="FIAE")
-        await member.remove_roles(role)
-        await member.add_roles(undefined)
-    if reaction.emoji == '\N{Personal Computer}':
-        role = discord.utils.get(member.guild.roles, name="FISI-Azubi")
-        await member.remove_roles(role)
-        await member.add_roles(undefined)
-    if reaction.emoji == '\N{Desktop Computer}':
-        role = discord.utils.get(member.guild.roles, name="FISI")
-        await member.remove_roles(role)
-        await member.add_roles(undefined)
+    if payload.channel_id == 1092355243418861619:
+        if str(payload.emoji) == '\N{wrench}':
+            role = get(guild.roles, name='FIDV-Azubi')
+            await member.remove_roles(role)
+            await member.add_roles(undefined)
+        if str(payload.emoji) == '\N{screwdriver}':
+            role = get(guild.roles, name='FIDV')
+            await member.remove_roles(role)
+            await member.add_roles(undefined)
+        if str(payload.emoji) == '\N{telescope}':
+            role = get(guild.roles, name='FIDP-Azubi')
+            await member.remove_roles(role)
+            await member.add_roles(undefined)
+        if str(payload.emoji) == '\N{keyboard}':
+            role = get(guild.roles, name='FIDP')
+            await member.remove_roles(role)
+            await member.add_roles(undefined)
+        if str(payload.emoji) == '\N{ticket}':
+            role = get(guild.roles, name='FIAE-Azubi')
+            await member.remove_roles(role)
+            await member.add_roles(undefined)
+        if str(payload.emoji) == '\N{Notebook}':
+            role = get(guild.roles, name='FIAE')
+            await member.remove_roles(role)
+            await member.add_roles(undefined)
+        if str(payload.emoji) == '\N{Personal Computer}':
+            role = get(guild.roles, name='FISI-Azubi')
+            await member.remove_roles(role)
+            await member.add_roles(undefined)
+        if str(payload.emoji) == '\N{Desktop Computer}':
+            role = get(guild.roles, name='FISI')
+            await member.remove_roles(role)
+            await member.add_roles(undefined)
+        if str(payload.emoji) == '\N{High Voltage Sign}':
+            role = get(guild.roles, name='IT-SE-Azubi')
+            await member.remove_roles(role)
+            await member.add_roles(undefined)
+        if str(payload.emoji) == '\N{Electric Plug}':
+            role = get(guild.roles, name='IT-SE')
+            await member.remove_roles(role)
+            await member.add_roles(undefined)
+        else:
+            role = discord.utils.get(guild.roles, name=payload.emoji)
+
+        if role is not None:
+            await member.remove_roles(role)
+            channel = client.get_channel(1089909009869451277)
+            await channel.send(
+                f"{member.mention} hat die {role.name} Role entfernt bekommen")
+
 
 def main():
     @client.event
@@ -153,7 +191,7 @@ def main():
         channels = client.get_channel(1089909009869451279)
         print('Clearing messages...')
         await channels.purge(limit=1000)
-        embed = discord.Embed(title='Wähle die Fachrichtung deines Fachinformatikers!',
+        embed = discord.Embed(title='Wähle die Fachrichtung deines Berufes!',
                               description='nur __eine__ Rolle wählen **!**, bei __Missachtung__ werden alle Rollen entfernt**!**')
         embed.set_author(name="https://www.fachinformatik.it",url="https://www.fachinformatik.it")
         embed.add_field(name='Systemintegeration', value='\N{Desktop Computer}', inline=True)
@@ -164,6 +202,8 @@ def main():
         embed.add_field(name='Digitale Vernetzung-Azubi', value='\N{wrench}', inline=True)
         embed.add_field(name='Daten- und Prozessanalyse', value='\N{keyboard}', inline=True)
         embed.add_field(name='Daten- und Prozessanalyse-Azubi', value='\N{telescope}', inline=True)
+        embed.add_field(name='IT-Systemelektroniker', value='\N{Electric Plug}', inline=True)
+        embed.add_field(name='IT-Systemelektroniker-Azubi', value='\N{High Voltage Sign}', inline=True)
         embed.set_footer(text='Auswahl ist erforderlich, by @Taracraft#0762')
         mess = await channels.send(embed=embed)
         await mess.add_reaction('\N{Desktop Computer}')
@@ -174,6 +214,8 @@ def main():
         await mess.add_reaction('\N{wrench}')
         await mess.add_reaction('\N{keyboard}')
         await mess.add_reaction('\N{telescope}')
+        await mess.add_reaction('\N{Electric Plug}')
+        await mess.add_reaction('\N{High Voltage Sign}')
 
 if __name__ == '__main__':
     main()
