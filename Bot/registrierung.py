@@ -1,20 +1,8 @@
 # -*- coding: iso-8859-1 -*-
 import asyncio
 import logging.handlers
-
 import discord
 from discord.utils import get
-
-'''rolelist = [1089909009248698481,
-            1089909009248698479,
-            1089909009248698480,
-            1089909008867012708,
-            1089909008867012703,
-            1089909008867012702,
-            1089909008867012705,
-            1089909008867012704,
-            1093651596585484369,
-            1093652255783264347]'''
 intents = discord.Intents.all()
 intents.members = True
 intents.messages = True
@@ -188,7 +176,7 @@ def main():
             print("Connected to server: {}".format(guild))
         print("------")
         client.loop.create_task(status_task())
-        channels = client.get_channel(1089909009869451279)
+        channels = client.get_channel(1092355243418861619)
         print('Clearing messages...')
         await channels.purge(limit=1000)
         embed = discord.Embed(title='Wähle die Fachrichtung deines Berufes!',
