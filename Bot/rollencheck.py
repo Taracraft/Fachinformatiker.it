@@ -27,6 +27,16 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 @client.event
+async def on_message(message):
+    if message.author.bot:
+        return
+    if ("download" in message.content.lower() or "Download" in message.content or "herunterladen" in message.content.lower() or "Herunterladen" in message.content) and ("cloud" in message.content.lower() or "Cloud" in message.content):
+        channel = client.get_channel(1091003987089698826)
+        target_message = await channel.fetch_message(1103250414931030026)
+        await message.channel.send(f"{message.author.mention} Der Download der Cloud ist gesperrt, weitere Informationen unter {target_message.jump_url}")
+
+
+@client.event
 async def check_roles():
         for guild in client.guilds:
             for member in guild.members:
