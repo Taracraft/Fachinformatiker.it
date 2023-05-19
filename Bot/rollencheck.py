@@ -35,7 +35,6 @@ async def on_message(message):
         target_message = await channel.fetch_message(1103250414931030026)
         await message.channel.send(f"{message.author.mention} Der Download der Cloud ist gesperrt, weitere Informationen unter {target_message.jump_url}")
 
-
 @client.event
 async def check_roles():
         for guild in client.guilds:
@@ -54,7 +53,7 @@ async def check_roles():
                             channel = client.get_channel(1089909009869451277)
                             await channel.send(f"{member.mention} hat die {role.name} Role seit 7 tagen und wird gekickt")
                             embed = discord.Embed(title="Kick",
-                                                  description="Du wurdest gekickt weil du keine Rolle in Channel: <#905056217595002891> ausgewählt hast.",
+                                                  description="Du wurdest gekickt weil du keine Rolle in Channel: willkommen ausgewählt hast.",
                                                   color=0xbd2e2e)
                             embed.set_author(name="Fachinformatiker-Discord")
                             embed.add_field(name="Hinweiß",
@@ -63,6 +62,33 @@ async def check_roles():
                             await getuser.send(embed=embed)
                             await getuser.kick(reason='')
         await asyncio.sleep(60 * 60 * 24)
+
+@client.event
+async def rolecheck():
+    for guild in client.guilds:
+        for member in guild.members:
+            if member.bot:
+                continue  # Überspringe Bots
+
+            rollen = []
+            for role in member.roles:
+                if role.name.lower() == 'admins' or role.name.lower() == 'moderator' or role.name.lower() == '@everyone' or role.name.lower() == 'server booster':
+                    continue  # Ignoriere die Rollen "admins", "moderator", "@everyone" und "server booster"
+                rollen.append(role)
+
+            if len(rollen) > 1:  # Überprüfe, ob das Mitglied mehr als eine nicht ignorierte Rolle hat
+                undefined = discord.utils.get(member.guild.roles, name="-undefined-")
+                await member.remove_roles(undefined)
+                for role in rollen:
+                    await member.remove_roles(role)
+                await member.add_roles(undefined)
+                channel = client.get_channel(1089909009869451277)
+                await channel.send(f"{member.mention} hat folgende Rollen: {', '.join([r.name for r in rollen])} und wird zu undefined zurückgestuft!")
+                print(f"USER_ID: {member.id:d} - USER_NAME: {member.name} - ROLES: {', '.join([r.name for r in rollen])}")
+                channel = client.get_channel(1089909009869451274)
+                await channel.send(f"{member.mention} du hast mehr als 1 Fachbereich ausgewählt, dir wurden alle Rollen entfernt. Bitte wähle nur 1 Fachbereich aus.")
+
+    await asyncio.sleep(60)  # Eine Wartezeit von 60 Sekunden einfügen
 
 @client.event
 async def update_presence():
@@ -84,7 +110,8 @@ async def main():
 
         print("Starting up...")
         await client.loop.create_task(update_presence())
-        await client.loop.create_task(check_roles())    
+        await client.loop.create_task(check_roles())
+        await client.loop.create_task(rolecheck())
 
 if __name__ == '__main__':
     asyncio.run(main())
