@@ -75,7 +75,7 @@ async def rolecheck():
                 if role.name.lower() == 'admins' or role.name.lower() == 'moderator' or role.name.lower() == '@everyone' or role.name.lower() == 'server booster':
                     continue  # Ignoriere die Rollen "admins", "moderator", "@everyone" und "server booster"
                 rollen.append(role)
-
+            channel_id = 1092355243418861619  # Die ID des Channels, den du erwähnen möchtest
             if len(rollen) > 1:  # Überprüfe, ob das Mitglied mehr als eine nicht ignorierte Rolle hat
                 undefined = discord.utils.get(member.guild.roles, name="-undefined-")
                 await member.remove_roles(undefined)
@@ -86,7 +86,8 @@ async def rolecheck():
                 await channel.send(f"{member.mention} hat folgende Rollen: {', '.join([r.name for r in rollen])} und wird zu undefined zurückgestuft!")
                 print(f"USER_ID: {member.id:d} - USER_NAME: {member.name} - ROLES: {', '.join([r.name for r in rollen])}")
                 channel = client.get_channel(1089909009869451274)
-                await channel.send(f"{member.mention} du hast mehr als 1 Fachbereich ausgewählt, dir wurden alle Rollen entfernt. Bitte wähle nur 1 Fachbereich aus.")
+                mention_channel = client.get_channel(channel_id)
+                await channel.send(f"{member.mention} du hast mehr als 1 Fachbereich ausgewählt, dir wurden alle Rollen entfernt. Bitte wähle nur 1 Fachbereich auswählen in {mention_channel.mention}.")
 
     await asyncio.sleep(60)  # Eine Wartezeit von 60 Sekunden einfügen
 
