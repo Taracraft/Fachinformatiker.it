@@ -30,7 +30,7 @@ async def status_task():
         await client.change_presence(activity=discord.Game('https://www.fachinformatik.it'),
                                      status=discord.Status.online)
         await asyncio.sleep(10)
-        await client.change_presence(activity=discord.Game('Testbot'), status=discord.Status.online)
+        await client.change_presence(activity=discord.Game('Rollen-Auswahl'), status=discord.Status.online)
         await asyncio.sleep(5)
 
 
