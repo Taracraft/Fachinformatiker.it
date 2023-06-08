@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="93e03e30-8075-4987-abfd-80ef36cf6b28" name="auth.fachinformatik.it" url="auth.fachinformatik.it">
+        <fileTransfer rootFolder="/var/www/vhost/fachinformatik.it/htdocs" accessType="SFTP" host="fachinformatik.it" port="44" sshConfigId="f3a32293-ff88-4d98-a909-b51f9514daf5" sshConfig="fi_php@fachinformatik.it:44 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

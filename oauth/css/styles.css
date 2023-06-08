@@ -1,0 +1,78 @@
+.bg-discord-gray {
+    background-color: #2C2F33;
+}
+
+body {
+    background-color: #2d2d2d;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.main-container {
+    display: flex;
+    align-items: flex-start;
+}
+
+.container {
+    padding: 2rem;
+    background-color: #2C2F33;
+    border-radius: 1rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    max-width: 500px;
+}
+
+.header, .content, .footer {
+    text-align: center;
+}
+
+.avatar-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.avatar-container img {
+    border-radius: 50%;
+    margin-right: 1rem;
+}
+
+.cloud-link img {
+    border-radius: 15px;
+}
+
+.footer {
+    margin-top: 2rem;
+}
+
+.additional-boxes {
+    display: grid;
+    grid-template-rows: repeat(4, auto);
+    gap: 1rem;
+    margin: 0 1rem;
+}
+
+.box {
+    padding: 1rem;
+    background-color: #2C2F33;
+    border-radius: 1rem;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.box h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.box p {
+    margin: 0;
+    color: white;
+}

@@ -1,47 +1,84 @@
 <?php
 session_start();
 
-if(!$_SESSION['logged_in']){
-  header('Location: error.php');
-  exit();
+if (!$_SESSION['logged_in']) {
+    header('Location: error.php');
+    exit();
 }
+
 extract($_SESSION['userData']);
 
 $avatar_url = "https://cdn.discordapp.com/avatars/$discord_id/$avatar.png";
-$guilds = $_SESSION['userData']['guilds'];
-$guildMarkup='';
-
-foreach ($guilds as $key => $guildData) {
-    $guildMarkup.='<li class="py-2 px-4 w-full rounded-t-lg border-b border-gray-200 dark:border-gray-600">'.$guildData['name'].'</li>';
-}
+$display_name = ucfirst(strtolower($name));
 ?>
 <!doctype html>
-<html lang="">
+<html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="css/output.css" rel="stylesheet">
-    <title></title>
+    <meta charset="UTF-8">
+    <link href="css/output.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+    <title>Dashboard</title>
 </head>
-<body>
-    <div class="flex items-center justify-center h-screen bg-discord-gray flex-col">
-      <div class="text-white text-3xl">Willkommen zum Dashboard, </div>
-      <div class="flex items-center mt-4">
-        <img class="rounded-full w-12 h-12 mr-3" src="<?php echo $avatar_url?>"  alt=""/>
-        <span class="text-3xl text-white font-semibold"><?php echo $name;?></span>
-        <ul class="w-96 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white mt-6">
-           <h3 class="text-xl font-bold ml-3 text-gray-300 uppercase py-2">Discord-Server:</h3>
-           <?php echo $guildMarkup;?>
-      </ul>
-      </div>
-        <div class="text-white text-3xl">Cloud-Zugang:
-        <a href="https://cloud.fachinformatik.it/cloud/" target="_blank"><img src="img/logo.png" alt="" height="200" width="200"></img></div></a>
-        <a href="logout.php" class="mt-5 text-gray-300">Logout</a>
+<body class="bg-discord-gray flex flex-col items-center justify-center min-h-screen">
+    <div class="main-container flex">
+        <div class="additional-boxes">
+            <div class="box">
+                <h2>Box 1</h2>
+                <p>Beispieltext für Box 1.</p>
+            </div>
+            <div class="box">
+                <h2>Box 2</h2>
+                <p>Beispieltext für Box 2.</p>
+            </div>
+            <div class="box">
+                <h2>Box 3</h2>
+                <p>Beispieltext für Box 3.</p>
+            </div>
+            <div class="box">
+                <h2>Box 7</h2>
+                <p>Beispieltext für Box 7.</p>
+            </div>
+        </div>
+        <div class="container mx-4">
+            <div class="header">
+                <div class="avatar-container">
+                    <img class="w-12 h-12" src="<?php echo htmlspecialchars($avatar_url); ?>" alt="Avatar">
+                    <h1 class="text-4xl font-bold text-white ml-4"><?php echo htmlspecialchars($display_name); ?></h1>
+                </div>
+                <div class="text-white text-3xl mt-2">Willkommen zum Dashboard</div>
+            </div>
+
+            <div class="content">
+                <div class="text-white text-3xl mt-4">Cloud-Zugang:</div>
+                <div class="cloud-link mt-4">
+                    <a href="https://cloud.fachinformatik.it/" target="_blank">
+                        <img src="img/logo.png" alt="Cloud Logo" height="200" width="200">
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer mt-6">
+                <a href="logout.php" class="text-gray-300">Logout</a>
+            </div>
+        </div>
+        <div class="additional-boxes">
+            <div class="box">
+                <h2>Box 4</h2>
+                <p>Beispieltext für Box 4.</p>
+            </div>
+            <div class="box">
+                <h2>Box 5</h2>
+                <p>Beispieltext für Box 5.</p>
+            </div>
+            <div class="box">
+                <h2>Box 6</h2>
+                <p>Beispieltext für Box 6.</p>
+            </div>
+            <div class="box">
+                <h2>Box 8</h2>
+                <p>Beispieltext für Box 8.</p>
+            </div>
+        </div>
     </div>
-
 </body>
-</html>
-
-
-
 </html>
