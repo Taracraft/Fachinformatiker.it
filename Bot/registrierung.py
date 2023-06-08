@@ -102,11 +102,11 @@ async def on_raw_reaction_add(payload):
             role = get(guild.roles, name=payload.emoji)
 
         if role is not None:
-            await payload.member.add_roles(role)
-            channel = client.get_channel(1089909009869451277)
-            await channel.send(
-                f"{member.mention} hat die {role.name} Role zugewiesen bekommen")
-
+            if not member.bot:
+                await payload.member.add_roles(role)
+                channel = client.get_channel(1089909009869451277)
+                await channel.send(
+                    f"{member.mention} hat die {role.name} Role hinzugefügt bekommen")
 
 # Assign the role when the role is added as a reaction to the message.
 @client.event
@@ -159,11 +159,11 @@ async def on_raw_reaction_remove(payload):
             role = discord.utils.get(guild.roles, name=payload.emoji)
 
         if role is not None:
-            await member.remove_roles(role)
-            channel = client.get_channel(1089909009869451277)
-            await channel.send(
+            if not member.bot:
+                await payload.member.add_roles(role)
+                channel = client.get_channel(1089909009869451277)
+                await channel.send(
                 f"{member.mention} hat die {role.name} Role entfernt bekommen")
-
 
 def main():
     @client.event
