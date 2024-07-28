@@ -15,8 +15,8 @@ $display_name = ucfirst(strtolower($name));
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <link href="css/output.css" rel="stylesheet">
-    <link href="css/styles.css" rel="stylesheet">
+    <link href="style/css/output.css" rel="stylesheet">
+    <link href="style/css/styles.css" rel="stylesheet">
     <title>Dashboard</title>
 </head>
 <body class="bg-discord-gray flex flex-col items-center justify-center min-h-screen">
@@ -35,8 +35,8 @@ $display_name = ucfirst(strtolower($name));
                 <p>Beispieltext für Box 3.</p>
             </div>
             <div class="box">
-                <h2>Box 7</h2>
-                <p>Beispieltext für Box 7.</p>
+                <h2>Box 4</h2>
+                <p>Beispieltext für Box 4.</p>
             </div>
         </div>
         <div class="container mx-4">
@@ -52,7 +52,7 @@ $display_name = ucfirst(strtolower($name));
                 <div class="text-white text-3xl mt-4">Cloud-Zugang:</div>
                 <div class="cloud-link mt-4">
                     <a href="https://cloud.fachinformatik.it/" target="_blank">
-                        <img src="img/logo.png" alt="Cloud Logo" height="200" width="200">
+                        <img src="images/logo.png" alt="Cloud Logo" height="200" width="200">
                     </a>
                 </div>
             </div>
@@ -63,16 +63,16 @@ $display_name = ucfirst(strtolower($name));
         </div>
         <div class="additional-boxes">
             <div class="box">
-                <h2>Box 4</h2>
-                <p>Beispieltext für Box 4.</p>
-            </div>
-            <div class="box">
                 <h2>Box 5</h2>
                 <p>Beispieltext für Box 5.</p>
             </div>
             <div class="box">
                 <h2>Box 6</h2>
                 <p>Beispieltext für Box 6.</p>
+            </div>
+            <div class="box">
+                <h2>Box 7</h2>
+                <p>Beispieltext für Box 7.</p>
             </div>
             <div class="box">
                 <h2>Box 8</h2>
@@ -82,3 +82,4 @@ $display_name = ucfirst(strtolower($name));
     </div>
 </body>
 </html>
+
