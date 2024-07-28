@@ -15,7 +15,7 @@ $payload = [
     'client_id'=>'',
     'client_secret'=>'',
     'grant_type'=>'authorization_code',
-    'redirect_uri'=>'https://cloud.fachinformatik.it/oauth/process-oauth.php',
+    'redirect_uri'=>'https://auth.fachinformatik.it/process-oauth.php',
     'scope'=>'identify%20guids',
 ];
 
