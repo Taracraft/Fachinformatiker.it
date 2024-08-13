@@ -30,7 +30,7 @@ formatter = logging.Formatter('[{asctime}] [{levelname:<8}] {name}: {message}', 
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-#Config
+# Config
 
 # Variablen
 bot_token = ''
@@ -38,10 +38,6 @@ api_key = ''
 kb_channel_id = '1272239238708199434'
 guild_id = '1089909008867012701'
 token_file = 'token.json'
-
-################################
-#AB HIER NICHTS MEHR ÄNDERN!!!!#
-################################
 
 # URL der REST API
 documents_url = f'https://api.bnder.net/consumer/v1/guilds/{guild_id}/documents'
@@ -126,7 +122,7 @@ def get_document_details(document_id):
 def create_embed_from_document(document, content=None):
     embed = discord.Embed(
         title=document.get('title', 'Kein Titel'),
-        description=content or 'Klicke auf ?Ausklappen?, um den Inhalt anzuzeigen.',
+        description=content or 'Klicke auf Ausklappen, um den Inhalt anzuzeigen.',
         color=discord.Color.blue()  # Farbe des Embeds
     )
     return embed
@@ -137,6 +133,7 @@ class DetailsButtonView(View):
         super().__init__(*args, **kwargs)
         self.document_id = document_id
         self.showing_content = False
+        self.timeout = 600  # Setze den Timeout für die View (600 Sekunden = 10 Minuten)
 
     @discord.ui.button(label="Ausklappen", style=discord.ButtonStyle.primary)
     async def details_button(self, interaction: discord.Interaction, button: discord.ui.Button):
