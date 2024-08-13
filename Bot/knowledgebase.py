@@ -4,6 +4,8 @@ import logging.handlers
 import requests
 import discord
 from discord.ui import Button, View
+import json
+import os
 
 # Intents
 intents = discord.Intents.all()
@@ -28,22 +30,64 @@ formatter = logging.Formatter('[{asctime}] [{levelname:<8}] {name}: {message}', 
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+#Config
+
 # Variablen
 bot_token = ''
 api_key = ''
 kb_channel_id = '1272239238708199434'
 guild_id = '1089909008867012701'
+token_file = 'token.json'
+
+################################
+#AB HIER NICHTS MEHR ÄNDERN!!!!#
+################################
 
 # URL der REST API
 documents_url = f'https://api.bnder.net/consumer/v1/guilds/{guild_id}/documents'
 document_url_template = 'https://api.bnder.net/consumer/v1/guilds/{guild_id}/documents/{document_id}'
+token_refresh_url = 'https://api.bnder.net/consumer/v1/auth/refresh'  # Ersetze durch den tatsächlichen Token-Refresh-Endpoint
 
-# HTTP-Header
-headers = {
-    'Content-Type': 'application/json',
-    'Authorization': f'Bearer {api_key}',
-    'User-Agent': 'Fachinformatik.IT Discord Anfrage'
-}
+# Funktion zum Laden des Tokens aus der Datei
+def load_token():
+    if os.path.exists(token_file):
+        with open(token_file, 'r') as file:
+            data = json.load(file)
+            return data.get('access_token')
+    return None
+
+# Funktion zum Speichern des Tokens in der Datei
+def save_token(token):
+    with open(token_file, 'w') as file:
+        json.dump({'access_token': token}, file)
+
+# Funktion zum Aktualisieren des API-Tokens
+def refresh_api_token():
+    global headers
+    response = requests.post(token_refresh_url, headers={'Authorization': f'Bearer {api_key}'})
+    if response.status_code == 200:
+        new_token = response.json().get('access_token')
+        if new_token:
+            headers['Authorization'] = f'Bearer {new_token}'
+            save_token(new_token)
+            return True
+    print("Fehler beim Aktualisieren des Tokens:", response.status_code, response.text)
+    return False
+
+# Token aus der Datei laden und in den Header integrieren
+token = load_token()
+if token:
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {token}',
+        'User-Agent': 'Fachinformatik.IT Discord Anfrage'
+    }
+else:
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {api_key}',
+        'User-Agent': 'Fachinformatik.IT Discord Anfrage'
+    }
 
 # Funktion zur Durchführung der GET-Anfrage für alle Dokumente
 def get_all_documents(limit=100, project_id=None):
@@ -54,6 +98,9 @@ def get_all_documents(limit=100, project_id=None):
         params['project_id'] = project_id
 
     response = requests.get(documents_url, headers=headers, params=params)
+    if response.status_code == 401:  # Unauthorized, Token möglicherweise abgelaufen
+        if refresh_api_token():
+            response = requests.get(documents_url, headers=headers, params=params)
     if response.status_code == 200:
         return response.json().get('documents', [])
     else:
@@ -65,6 +112,9 @@ def get_all_documents(limit=100, project_id=None):
 def get_document_details(document_id):
     url = document_url_template.format(guild_id=guild_id, document_id=document_id)
     response = requests.get(url, headers=headers)
+    if response.status_code == 401:  # Unauthorized, Token möglicherweise abgelaufen
+        if refresh_api_token():
+            response = requests.get(url, headers=headers)
     if response.status_code == 200:
         return response.json()
     else:
@@ -73,15 +123,12 @@ def get_document_details(document_id):
         return None
 
 # Funktion zum Erstellen von Discord-Embeds aus Dokumenten
-def create_embed_from_document(document, show_details_button=False):
+def create_embed_from_document(document, content=None):
     embed = discord.Embed(
         title=document.get('title', 'Kein Titel'),
-        description=document.get('description', 'Keine Beschreibung verfügbar'),
+        description=content or 'Klicke auf ?Ausklappen?, um den Inhalt anzuzeigen.',
         color=discord.Color.blue()  # Farbe des Embeds
     )
-    embed.add_field(name='Erstellt am', value=document.get('created_at', 'Nicht verfügbar'), inline=False)
-    if show_details_button:
-        embed.set_footer(text="Klicke auf den Button, um weitere Details zu sehen.")
     return embed
 
 # Funktion zum Erstellen des Buttons
@@ -89,13 +136,25 @@ class DetailsButtonView(View):
     def __init__(self, document_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.document_id = document_id
+        self.showing_content = False
 
     @discord.ui.button(label="Ausklappen", style=discord.ButtonStyle.primary)
     async def details_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        document_details = get_document_details(self.document_id)
-        if document_details:
-            embed = create_embed_from_document(document_details, show_details_button=False)
-            await interaction.response.edit_message(embed=embed)
+        if self.showing_content:
+            # Inhalt ausblenden
+            document = get_document_details(self.document_id)
+            if document:
+                embed = create_embed_from_document(document)
+                await interaction.response.edit_message(embed=embed, view=self)
+                self.showing_content = False
+        else:
+            # Inhalt anzeigen
+            document = get_document_details(self.document_id)
+            if document:
+                content = document.get('content', 'Kein Inhalt verfügbar')
+                embed = create_embed_from_document(document, content=content)
+                await interaction.response.edit_message(embed=embed, view=self)
+                self.showing_content = True
 
 # Funktion zum Senden der Dokumente an den Discord-Kanal
 async def send_documents_to_channel(channel, documents):
@@ -104,7 +163,7 @@ async def send_documents_to_channel(channel, documents):
         return
 
     for document in documents:
-        embed = create_embed_from_document(document, show_details_button=True)
+        embed = create_embed_from_document(document)
         view = DetailsButtonView(document_id=document['id'])
         await channel.send(embed=embed, view=view)
 
