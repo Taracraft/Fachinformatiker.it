@@ -1,7 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 import asyncio
 import logging.handlers
-import requests
+import aiohttp
 import discord
 from discord.ui import Button, View
 import json
@@ -58,17 +58,18 @@ def save_token(token):
         json.dump({'access_token': token}, file)
 
 # Funktion zum Aktualisieren des API-Tokens
-def refresh_api_token():
+async def refresh_api_token(session):
     global headers
-    response = requests.post(token_refresh_url, headers={'Authorization': f'Bearer {api_key}'})
-    if response.status_code == 200:
-        new_token = response.json().get('access_token')
-        if new_token:
-            headers['Authorization'] = f'Bearer {new_token}'
-            save_token(new_token)
-            return True
-    print("Fehler beim Aktualisieren des Tokens:", response.status_code, response.text)
-    return False
+    async with session.post(token_refresh_url, headers={'Authorization': f'Bearer {api_key}'}) as response:
+        if response.status == 200:
+            data = await response.json()
+            new_token = data.get('access_token')
+            if new_token:
+                headers['Authorization'] = f'Bearer {new_token}'
+                save_token(new_token)
+                return True
+        print("Fehler beim Aktualisieren des Tokens:", response.status, await response.text())
+        return False
 
 # Token aus der Datei laden und in den Header integrieren
 token = load_token()
@@ -86,37 +87,43 @@ else:
     }
 
 # Funktion zur Durchführung der GET-Anfrage für alle Dokumente
-def get_all_documents(limit=100, project_id=None):
+async def get_all_documents(session, limit=100, project_id=None):
     params = {
         'limit': str(limit)
     }
     if project_id:
         params['project_id'] = project_id
 
-    response = requests.get(documents_url, headers=headers, params=params)
-    if response.status_code == 401:  # Unauthorized, Token möglicherweise abgelaufen
-        if refresh_api_token():
-            response = requests.get(documents_url, headers=headers, params=params)
-    if response.status_code == 200:
-        return response.json().get('documents', [])
-    else:
-        print(f"Fehler: {response.status_code}")
-        print("Antwort:", response.text)
-        return None
+    async with session.get(documents_url, headers=headers, params=params) as response:
+        if response.status == 401:  # Unauthorized, Token möglicherweise abgelaufen
+            if await refresh_api_token(session):
+                async with session.get(documents_url, headers=headers, params=params) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        return data.get('documents', [])
+        elif response.status == 200:
+            data = await response.json()
+            return data.get('documents', [])
+        else:
+            print(f"Fehler: {response.status}")
+            print("Antwort:", await response.text())
+            return None
 
 # Funktion zur Durchführung der GET-Anfrage für ein einzelnes Dokument
-def get_document_details(document_id):
+async def get_document_details(session, document_id):
     url = document_url_template.format(guild_id=guild_id, document_id=document_id)
-    response = requests.get(url, headers=headers)
-    if response.status_code == 401:  # Unauthorized, Token möglicherweise abgelaufen
-        if refresh_api_token():
-            response = requests.get(url, headers=headers)
-    if response.status_code == 200:
-        return response.json()
-    else:
-        print(f"Fehler: {response.status_code}")
-        print("Antwort:", response.text)
-        return None
+    async with session.get(url, headers=headers) as response:
+        if response.status == 401:  # Unauthorized, Token möglicherweise abgelaufen
+            if await refresh_api_token(session):
+                async with session.get(url, headers=headers) as response:
+                    if response.status == 200:
+                        return await response.json()
+        elif response.status == 200:
+            return await response.json()
+        else:
+            print(f"Fehler: {response.status}")
+            print("Antwort:", await response.text())
+            return None
 
 # Funktion zum Erstellen von Discord-Embeds aus Dokumenten
 def create_embed_from_document(document, content=None):
@@ -133,25 +140,27 @@ class DetailsButtonView(View):
         super().__init__(*args, **kwargs)
         self.document_id = document_id
         self.showing_content = False
-        self.timeout = 600  # Setze den Timeout für die View (600 Sekunden = 10 Minuten)
+        # Timeout für die View entfernen
+        self.timeout = None
 
     @discord.ui.button(label="Ausklappen", style=discord.ButtonStyle.primary)
     async def details_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if self.showing_content:
-            # Inhalt ausblenden
-            document = get_document_details(self.document_id)
-            if document:
-                embed = create_embed_from_document(document)
-                await interaction.response.edit_message(embed=embed, view=self)
-                self.showing_content = False
-        else:
-            # Inhalt anzeigen
-            document = get_document_details(self.document_id)
-            if document:
-                content = document.get('content', 'Kein Inhalt verfügbar')
-                embed = create_embed_from_document(document, content=content)
-                await interaction.response.edit_message(embed=embed, view=self)
-                self.showing_content = True
+        async with aiohttp.ClientSession() as session:
+            if self.showing_content:
+                # Inhalt ausblenden
+                document = await get_document_details(session, self.document_id)
+                if document:
+                    embed = create_embed_from_document(document)
+                    await interaction.response.edit_message(embed=embed, view=self)
+                    self.showing_content = False
+            else:
+                # Inhalt anzeigen
+                document = await get_document_details(session, self.document_id)
+                if document:
+                    content = document.get('content', 'Kein Inhalt verfügbar')
+                    embed = create_embed_from_document(document, content=content)
+                    await interaction.response.edit_message(embed=embed, view=self)
+                    self.showing_content = True
 
 # Funktion zum Senden der Dokumente an den Discord-Kanal
 async def send_documents_to_channel(channel, documents):
@@ -187,9 +196,10 @@ async def on_ready():
         kb_channel = guild.get_channel(int(kb_channel_id))
         if kb_channel:
             await purge_channel(kb_channel)
-            documents = get_all_documents(limit=100)
-            if documents is not None:
-                await send_documents_to_channel(kb_channel, documents)
+            async with aiohttp.ClientSession() as session:
+                documents = await get_all_documents(session, limit=100)
+                if documents is not None:
+                    await send_documents_to_channel(kb_channel, documents)
     client.loop.create_task(status_task())
 
 # Status Task
