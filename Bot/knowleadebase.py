@@ -47,9 +47,8 @@ headers = {
 
 # Funktion zur Durchführung der GET-Anfrage
 def get_all_documents(limit=100, project_id=None):
-    # Stelle sicher, dass 'limit' ein gültiger Wert ist
     params = {
-        'limit': str(limit)  # Stelle sicher, dass limit als String übergeben wird
+        'limit': str(limit)
     }
     if project_id:
         params['project_id'] = project_id
@@ -93,9 +92,9 @@ async def on_ready():
     if guild:
         kb_channel = guild.get_channel(int(kb_channel_id))
         if kb_channel:
-            await purge_channel(kb_channel)  # Aufruf der Funktion zum Leeren des Kanals
+            await purge_channel(kb_channel)
 
-            documents = get_all_documents(limit=100)  # Überprüfe die Dokumente
+            documents = get_all_documents(limit=100)
             if documents is not None:
                 await send_documents_to_channel(kb_channel, documents)
     client.loop.create_task(status_task())
